@@ -1,0 +1,38 @@
+export const exams = [
+  {
+    slug: 'jamb',
+    name: 'JAMB (UTME)',
+    description: 'Computer-based university entrance exam. English is compulsory, plus 3 electives.',
+    color: 'from-primary-500 to-accent-500',
+    compulsory: ['english'],
+    electiveMin: 3,
+    electiveMax: 3,
+  },
+  {
+    slug: 'waec',
+    name: 'WAEC (WASSCE)',
+    description: 'Secondary school certificate exam. English & Maths are compulsory, plus electives.',
+    color: 'from-primary-600 to-primary-400',
+    compulsory: ['english', 'mathematics'],
+    electiveMin: 5,
+    electiveMax: 7,
+  },
+  {
+    slug: 'neco',
+    name: 'NECO (SSCE)',
+    description: 'National secondary school certificate exam, similar structure to WAEC.',
+    color: 'from-accent-600 to-accent-400',
+    compulsory: ['english', 'mathematics'],
+    electiveMin: 5,
+    electiveMax: 7,
+  },
+  {
+    slug: 'post-utme',
+    name: 'POST-UTME',
+    description: 'University screening exam. Usually English plus your JAMB elective subjects.',
+    color: 'from-primary-500 to-primary-700',
+    compulsory: ['english'],
+    electiveMin: 1,
+    electiveMax: 3,
+  },
+];

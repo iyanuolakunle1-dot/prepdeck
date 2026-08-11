@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #F5F7FF;
+  color: #0B1021;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #EEF0FF;
+}
+::-webkit-scrollbar-thumb {
+  background: #4F46E5;
+  border-radius: 8px;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #4F46E5 0%, #06B6D4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.shimmer-bg {
+  background: linear-gradient(90deg, #EEF0FF 0%, #ffffff 50%, #EEF0FF 100%);
+  background-size: 1000px 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Dark mode overrides.
+   Rather than retrofitting every component with dark: variants,
+   we override the effective color of the handful of utility classes
+   the whole design system is built from (bg-white, bg-surface,
+   text-ink, text-muted, border-primary-100, shadow-card) once .dark
+   is present on <html>. This gives full-app dark mode coverage
+   without touching 30+ page files individually.
+   ------------------------------------------------------------- */
+.dark body {
+  background-color: #0B1021;
+  color: #EEF0FF;
+}
+
+.dark .bg-surface { background-color: #0B1021 !important; }
+.dark .bg-white { background-color: #150F30 !important; }
+.dark .bg-card { background-color: #150F30 !important; }
+.dark .bg-primary-50 { background-color: rgba(124, 116, 241, 0.12) !important; }
+.dark .bg-primary-50\/40 { background-color: rgba(124, 116, 241, 0.08) !important; }
+.dark .bg-primary-100 { background-color: rgba(124, 116, 241, 0.18) !important; }
+.dark .bg-brand-gradient-soft { background-image: linear-gradient(135deg, #1B1244 0%, #10233A 100%) !important; }
+
+.dark .text-ink { color: #F5F7FF !important; }
+.dark .text-ink\/80 { color: rgba(245, 247, 255, 0.8) !important; }
+.dark .text-ink\/70 { color: rgba(245, 247, 255, 0.7) !important; }
+.dark .text-ink\/60 { color: rgba(245, 247, 255, 0.6) !important; }
+.dark .text-muted { color: #9CA3AF !important; }
+
+.dark .border-primary-50 { border-color: rgba(124, 116, 241, 0.15) !important; }
+.dark .border-primary-100 { border-color: rgba(124, 116, 241, 0.22) !important; }
+.dark .border-primary-100\/60 { border-color: rgba(124, 116, 241, 0.2) !important; }
+.dark .divide-primary-50 > * + * { border-color: rgba(124, 116, 241, 0.15) !important; }
+
+.dark .shadow-card { box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35); }
+.dark .bg-white\/80 { background-color: rgba(21, 15, 48, 0.85) !important; }
+.dark .bg-white\/90 { background-color: rgba(21, 15, 48, 0.9) !important; }
+
+.dark input, .dark select, .dark textarea {
+  background-color: transparent;
+  color: #F5F7FF;
+}
+.dark input::placeholder, .dark textarea::placeholder {
+  color: #6B7280;
+}
