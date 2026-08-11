@@ -122,7 +122,7 @@ export default function PastQuestions() {
         ))}
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-2xl border border-primary-100 bg-white shadow-card">
+      <div className="mt-5 overflow-x-auto rounded-2xl border border-primary-100 bg-white shadow-card">
         {loading ? (
           <Loader />
         ) : (
