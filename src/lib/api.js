@@ -3,7 +3,7 @@ import axios from 'axios';
 // The Node backend proxies Open Trivia DB (https://opentdb.com) — a free,
 // no-key-required question API — so the client never talks to a third
 // party directly and we can normalize/decode the payload server-side.
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://prepdeck-backend.onrender.com';
 
 const api = axios.create({ baseURL: API_BASE });
 
