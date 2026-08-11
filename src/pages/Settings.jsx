@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Bell, Lock, Palette, ShieldCheck, Trash2,
-  CheckCircle2, AlertCircle, Moon, Calendar,
+  CheckCircle2, AlertCircle, Moon, Calendar, Sparkles,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { supabase } from '../lib/supabaseClient';
@@ -13,9 +13,9 @@ import { deleteAccount } from '../lib/api';
 import Loader from '../components/Loader';
 
 const tabs = [
-  { id: 'account', label: 'Account Settings', icon: User },
+  { id: 'account', label: 'Account', icon: User },
   { id: 'notifications', label: 'Notifications', icon: Bell },
-  { id: 'security', label: 'Privacy & Security', icon: ShieldCheck },
+  { id: 'security', label: 'Security', icon: ShieldCheck },
   { id: 'appearance', label: 'Appearance', icon: Palette },
 ];
 
@@ -98,115 +98,182 @@ export default function Settings() {
   if (loading) return <Loader />;
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 md:px-8">
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 md:px-8 md:py-10">
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="font-display text-3xl font-bold text-ink">Settings</h1>
-        <p className="mt-1 text-muted">Manage your account and preferences.</p>
+        <h1 className="font-display text-2xl font-bold text-ink sm:text-3xl">Settings</h1>
+        <p className="mt-1 text-xs text-muted sm:text-sm">Manage your account preferences and security.</p>
       </motion.div>
 
-      <div className="mt-6 flex gap-2 overflow-x-auto border-b border-primary-100">
+      {/* Responsive Horizontal Tabs */}
+      <div className="mt-6 -mx-4 px-4 sm:mx-0 sm:px-0 flex gap-2 overflow-x-auto border-b border-primary-100 pb-px scrollbar-none">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-3 text-sm font-semibold transition-colors ${
-              tab === t.id ? 'border-primary-600 text-primary-600' : 'border-transparent text-muted hover:text-ink'
+            className={`flex shrink-0 items-center gap-2 border-b-2 px-3.5 py-3 text-xs sm:text-sm font-semibold transition-all ${
+              tab === t.id
+                ? 'border-primary-600 text-primary-600 font-bold'
+                : 'border-transparent text-muted hover:text-ink'
             }`}
           >
-            <t.icon size={15} /> {t.label}
+            <t.icon size={16} className="shrink-0" />
+            <span>{t.label}</span>
           </button>
         ))}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr,320px]">
+        {/* Main Content Area */}
         <div className="space-y-6">
           {tab === 'account' && (
-            <>
-              <form onSubmit={saveProfile} className="rounded-2xl border border-primary-100 bg-white p-6 shadow-card">
-                <h3 className="mb-1 font-display text-sm font-bold text-ink">Profile Information</h3>
-                <p className="mb-5 text-xs text-muted">Update your personal information.</p>
+            <div className="space-y-6">
+              <form onSubmit={saveProfile} className="rounded-2xl border border-primary-100 bg-white p-5 shadow-card sm:p-6">
+                <div className="flex items-center gap-2.5 mb-1">
+                  <User size={18} className="text-primary-600 shrink-0" />
+                  <h3 className="font-display text-sm font-bold text-ink sm:text-base">Profile Information</h3>
+                </div>
+                <p className="mb-5 text-xs text-muted">Update your public display name and account details.</p>
+
                 {status === 'ok' && (
-                  <div className="mb-4 flex items-center gap-2 rounded-lg bg-success/10 px-4 py-3 text-sm text-success">
-                    <CheckCircle2 size={16} /> Saved.
+                  <div className="mb-4 flex items-center gap-2 rounded-xl bg-success/10 px-4 py-3 text-xs sm:text-sm text-success">
+                    <CheckCircle2 size={16} className="shrink-0" /> Changes saved successfully.
                   </div>
                 )}
+
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-ink/80">Full Name</label>
+                    <label className="mb-1.5 block text-xs font-medium text-ink/80 sm:text-sm">Full Name</label>
                     <input
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full rounded-xl border border-primary-100 px-3.5 py-2.5 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                      placeholder="Your name"
+                      className="w-full rounded-xl border border-primary-100 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-sm font-medium text-ink/80">Email Address</label>
-                    <input disabled value={user.email} className="w-full rounded-xl border border-primary-50 bg-surface px-3.5 py-2.5 text-sm text-muted" />
+                    <label className="mb-1.5 block text-xs font-medium text-ink/80 sm:text-sm">Email Address</label>
+                    <input
+                      disabled
+                      value={user.email}
+                      className="w-full rounded-xl border border-primary-50 bg-primary-50/40 px-3.5 py-2.5 text-sm text-muted cursor-not-allowed"
+                    />
                   </div>
                 </div>
-                <button type="submit" className="mt-5 rounded-xl bg-brand-gradient px-6 py-2.5 text-sm font-semibold text-white shadow-glow">
-                  Save changes
-                </button>
+
+                <div className="mt-5">
+                  <button
+                    type="submit"
+                    className="w-full sm:w-auto rounded-xl bg-brand-gradient px-6 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:opacity-95"
+                  >
+                    Save changes
+                  </button>
+                </div>
               </form>
 
-              <form onSubmit={handlePasswordChange} className="rounded-2xl border border-primary-100 bg-white p-6 shadow-card">
-                <h3 className="mb-1 flex items-center gap-2 font-display text-sm font-bold text-ink"><Lock size={16} /> Change Password</h3>
-                <p className="mb-5 text-xs text-muted">Update your password regularly to keep your account secure.</p>
+              <form onSubmit={handlePasswordChange} className="rounded-2xl border border-primary-100 bg-white p-5 shadow-card sm:p-6">
+                <div className="flex items-center gap-2.5 mb-1">
+                  <Lock size={18} className="text-primary-600 shrink-0" />
+                  <h3 className="font-display text-sm font-bold text-ink sm:text-base">Change Password</h3>
+                </div>
+                <p className="mb-5 text-xs text-muted">Ensure your account is using a secure, strong password.</p>
+
                 {status === 'error' && (
-                  <div className="mb-4 flex items-center gap-2 rounded-lg bg-danger/10 px-4 py-3 text-sm text-danger">
-                    <AlertCircle size={16} /> Could not update. Password may be too short.
+                  <div className="mb-4 flex items-center gap-2 rounded-xl bg-danger/10 px-4 py-3 text-xs sm:text-sm text-danger">
+                    <AlertCircle size={16} className="shrink-0" /> Could not update password. Must be at least 6 characters.
                   </div>
                 )}
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="New password (min. 6 characters)"
-                  className="mb-4 w-full rounded-xl border border-primary-100 px-3.5 py-2.5 text-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
-                />
-                <button type="submit" className="rounded-xl bg-brand-gradient px-6 py-2.5 text-sm font-semibold text-white shadow-glow">
-                  Update Password
-                </button>
+
+                <div className="max-w-md">
+                  <input
+                    type="password"
+                    required
+                    minLength={6}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="New password (min. 6 characters)"
+                    className="w-full rounded-xl border border-primary-100 bg-white px-3.5 py-2.5 text-sm text-ink outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                  />
+                  <div className="mt-4">
+                    <button
+                      type="submit"
+                      className="w-full sm:w-auto rounded-xl bg-brand-gradient px-6 py-2.5 text-sm font-semibold text-white shadow-glow transition hover:opacity-95"
+                    >
+                      Update Password
+                    </button>
+                  </div>
+                </div>
               </form>
-            </>
+            </div>
           )}
 
           {tab === 'notifications' && (
-            <div className="rounded-2xl border border-primary-100 bg-white p-6 shadow-card">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600"><Bell size={18} /></span>
+            <div className="rounded-2xl border border-primary-100 bg-white p-5 shadow-card sm:p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
+                    <Bell size={18} />
+                  </span>
                   <div>
-                    <p className="font-display text-sm font-bold text-ink">Practice reminders</p>
-                    <p className="text-xs text-muted">Get an occasional nudge to keep your streak going.</p>
+                    <p className="font-display text-sm font-bold text-ink sm:text-base">Practice reminders</p>
+                    <p className="text-xs text-muted">Get helpful notifications to keep your streak alive.</p>
                   </div>
                 </div>
-                <button onClick={toggleReminders} className={`h-6 w-11 rounded-full transition-colors ${emailReminders ? 'bg-brand-gradient' : 'bg-primary-100'}`}>
-                  <span className={`block h-5 w-5 translate-x-0.5 rounded-full bg-white transition-transform ${emailReminders ? 'translate-x-5' : ''}`} />
+                <button
+                  type="button"
+                  onClick={toggleReminders}
+                  className={`h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none ${
+                    emailReminders ? 'bg-brand-gradient' : 'bg-primary-100'
+                  }`}
+                  aria-label="Toggle practice reminders"
+                >
+                  <span
+                    className={`block h-5 w-5 translate-x-0.5 rounded-full bg-white transition-transform ${
+                      emailReminders ? 'translate-x-5' : ''
+                    }`}
+                  />
                 </button>
               </div>
             </div>
           )}
 
           {tab === 'security' && (
-            <div className="rounded-2xl border border-danger/30 bg-danger/5 p-6">
+            <div className="rounded-2xl border border-danger/30 bg-danger/5 p-5 sm:p-6">
               <div className="mb-3 flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger"><Trash2 size={18} /></span>
-                <p className="font-display text-sm font-bold text-danger">Delete account</p>
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-danger/10 text-danger">
+                  <Trash2 size={18} />
+                </span>
+                <div>
+                  <p className="font-display text-sm font-bold text-danger sm:text-base">Delete Account</p>
+                  <p className="text-xs text-danger/80">Permanent action</p>
+                </div>
               </div>
-              <p className="mb-4 text-sm text-danger/80">This permanently removes your profile, history and bookmarks. This can't be undone.</p>
+              <p className="mb-5 text-xs sm:text-sm text-danger/80 leading-relaxed">
+                This will permanently delete your account, practice history, accuracy records, and saved bookmarks. This action cannot be reversed.
+              </p>
+
               {!confirmDelete ? (
-                <button onClick={() => setConfirmDelete(true)} className="rounded-xl border border-danger px-5 py-2.5 text-sm font-semibold text-danger">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(true)}
+                  className="w-full sm:w-auto rounded-xl border border-danger bg-white px-5 py-2.5 text-xs sm:text-sm font-semibold text-danger transition hover:bg-danger hover:text-white"
+                >
                   Delete my account
                 </button>
               ) : (
-                <div className="flex gap-3">
-                  <button onClick={handleDelete} disabled={deleting} className="rounded-xl bg-danger px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    type="button"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                    className="w-full sm:w-auto rounded-xl bg-danger px-5 py-2.5 text-xs sm:text-sm font-semibold text-white transition hover:bg-danger/90 disabled:opacity-60"
+                  >
                     {deleting ? 'Deleting…' : 'Yes, permanently delete'}
                   </button>
-                  <button onClick={() => setConfirmDelete(false)} className="rounded-xl border border-primary-100 px-5 py-2.5 text-sm font-semibold text-ink/70">
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDelete(false)}
+                    className="w-full sm:w-auto rounded-xl border border-primary-100 bg-white px-5 py-2.5 text-xs sm:text-sm font-semibold text-ink/70 hover:bg-primary-50"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -215,58 +282,80 @@ export default function Settings() {
           )}
 
           {tab === 'appearance' && (
-            <div className="rounded-2xl border border-primary-100 bg-white p-6 shadow-card">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600"><Moon size={18} /></span>
+            <div className="rounded-2xl border border-primary-100 bg-white p-5 shadow-card sm:p-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-600">
+                    <Moon size={18} />
+                  </span>
                   <div>
-                    <p className="font-display text-sm font-bold text-ink">Dark mode</p>
-                    <p className="text-xs text-muted">Switch between light and dark theme across the app.</p>
+                    <p className="font-display text-sm font-bold text-ink sm:text-base">Dark Mode</p>
+                    <p className="text-xs text-muted">Switch between light and dark theme across all pages.</p>
                   </div>
                 </div>
                 <button
-                  onClick={() => { toggleTheme(); toast.success(theme === 'dark' ? 'Light mode on' : 'Dark mode on'); }}
-                  className={`h-6 w-11 rounded-full transition-colors ${theme === 'dark' ? 'bg-brand-gradient' : 'bg-primary-100'}`}
+                  type="button"
+                  onClick={() => {
+                    toggleTheme();
+                    toast.success(theme === 'dark' ? 'Light mode enabled' : 'Dark mode enabled');
+                  }}
+                  className={`h-6 w-11 shrink-0 rounded-full transition-colors focus:outline-none ${
+                    theme === 'dark' ? 'bg-brand-gradient' : 'bg-primary-100'
+                  }`}
+                  aria-label="Toggle dark mode"
                 >
-                  <span className={`block h-5 w-5 translate-x-0.5 rounded-full bg-white transition-transform ${theme === 'dark' ? 'translate-x-5' : ''}`} />
+                  <span
+                    className={`block h-5 w-5 translate-x-0.5 rounded-full bg-white transition-transform ${
+                      theme === 'dark' ? 'translate-x-5' : ''
+                    }`}
+                  />
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Account summary sidebar */}
+        {/* Account Summary Sidebar */}
         <div className="space-y-4">
           <div className="rounded-2xl border border-primary-100 bg-white p-5 shadow-card">
-            <p className="mb-3 font-display text-sm font-bold text-ink">Account Summary</p>
-            <div className="mb-3 flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-gradient text-sm font-bold text-white">
-                {(fullName || 'S')[0].toUpperCase()}
+            <p className="mb-3 font-display text-xs font-bold uppercase tracking-wider text-muted">Account Summary</p>
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-gradient text-base font-bold text-white shadow-glow">
+                {(fullName || user.email || 'S')[0].toUpperCase()}
               </span>
-              <div>
-                <p className="text-sm font-semibold text-ink">{fullName || 'Student'}</p>
-                <p className="text-xs text-muted">Student</p>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-ink truncate">{fullName || 'Student'}</p>
+                <p className="text-xs text-muted truncate">{user.email}</p>
               </div>
             </div>
-            <div className="space-y-2 border-t border-primary-50 pt-3 text-xs">
+
+            <div className="space-y-2.5 border-t border-primary-50 pt-3.5 text-xs">
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5 text-muted"><Calendar size={12} /> Member since</span>
-                <span className="font-semibold text-ink">{new Date(user.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
+                <span className="flex items-center gap-1.5 text-muted">
+                  <Calendar size={13} className="shrink-0" /> Member since
+                </span>
+                <span className="font-semibold text-ink">
+                  {new Date(user.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted">Account type</span>
-                <span className="font-semibold text-ink">Free plan</span>
+                <span className="text-muted">Account tier</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-primary-600">
+                  <Sparkles size={12} /> Free Plan
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-muted">Total attempts</span>
+                <span className="text-muted">Tests taken</span>
                 <span className="font-semibold text-ink">{stats.attempts}</span>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 p-5 text-ink">
+          <div className="rounded-2xl bg-gradient-to-br from-gold-500 to-gold-600 p-5 text-ink shadow-sm">
             <p className="font-display text-sm font-bold">Upgrade to Premium</p>
-            <p className="mt-1 text-xs text-ink/70">Unlock full mock exams and downloadable results.</p>
+            <p className="mt-1 text-xs text-ink/80 leading-relaxed">
+              Unlock unlimited full-length mock exams, timed multi-subject tests, and AI explanations.
+            </p>
           </div>
         </div>
       </div>
